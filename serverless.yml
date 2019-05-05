@@ -3,30 +3,30 @@ service: nodeless # NOTE: update this with your service name
 provider:
   name: aws
   runtime: nodejs8.10
-  region: sa-east-1
-  memorySize: 256
-  iamRoleStatements:
-    - Effect: Allow
+  region: sa-east-1 #Região em que ira rodar nossa aplicação
+  memorySize: 256   #Tamanho de memoria que utilizaremos para nossa função( multiplos de 2)
+  iamRoleStatements: # Define quais são as permissões desta função lambda, quais serviços que esta função esta autorizada utilizar 
+    - Effect: Allow # Queremos permitir alguma coisa
       Action:
-        - s3:GetObject
-        - s3:PutObject
+        - s3:GetObject # Vai até serviço S3 da AWS e pega algumas informações, ou seja pega os objeto armazenado no S3.
+        - s3:PutObject # Permite que aplicação salve  objetos dentro no serviço S3.
       Resource:
-        - "arn:aws:s3:::*"
+        - "arn:aws:s3:::*" #Qual bucket do S3 a aplicação esta autorizada salvar, neste caso utilizamos "*"(todos).
 
 functions:
   optimize:
     handler: optimize.handle
     environment:
-      bucket: rocketnodeserverless
-    events:
+      bucket: examplenodeserverless #nome do bucket que utilizaremos dentro no s3, *Importante: Este nome tem que ser unico.
+    events: # Eventos que iremos ouvir para disparar as funções.
       - s3:
-          bucket: rocketnodeserverless
-          event: s3:ObjectCreated:*
-          rules:
-            - prefix: uploads/
-            - suffix: .jpg
+          bucket: examplenodeserverless #Qual bucket que iremos utilizar.
+          event: s3:ObjectCreated:* #evento que iremos ouvir, ou seja toda vez que  objeto for criado.
+          rules: #Regras que tera no seu evento
+            - prefix: uploads/ # somente dentro na pasta uploads
+            - suffix: .jpg     #somente arquivos com formato especificado
       - s3:
-          bucket: rocketnodeserverless
+          bucket: examplenodeserverless
           event: s3:ObjectCreated:*
           rules:
             - prefix: uploads/
